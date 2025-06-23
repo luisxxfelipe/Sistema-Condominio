@@ -1,9 +1,102 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id          Int     @id @default(autoincrement())
+  nome        String
+  login       String  @unique
+  senhaHash   String
+  tipoPerfil  String  // 'admin', 'gerente', 'escrita', etc.
+
+  logs        LogTransacao[]
+}
+
+model Morador {
+  id         Int     @id @default(autoincrement())
+  nome       String
+  cpf        String  @unique
+  telefone   String
+  unidadeId  Int?
+  unidade    Unidade? @relation(fields: [unidadeId], references: [id])
+}
+
+model Unidade {
+  id        Int     @id @default(autoincrement())
+  bloco     String
+  numero    String
+  tipo      String
+  moradores Morador[]
+  boletos   Boleto[]
+  reservas  Reserva[]
+  visitantes Visitante[]
+}
+
+model Visitante {
+  id         Int     @id @default(autoincrement())
+  nome       String
+  documento  String
+  dataVisita DateTime
+  unidadeId  Int
+  unidade    Unidade @relation(fields: [unidadeId], references: [id])
+}
+
+model PrestadorServico {
+  id        Int     @id @default(autoincrement())
+  nome      String
+  servico   String
+  documento String
+  entrada   DateTime
+  saida     DateTime
+}
+
+model AreaComum {
+  id        Int      @id @default(autoincrement())
+  nome      String
+  descricao String
+  regras    String
+  reservas  Reserva[]
+}
+
+model Reserva {
+  id           Int      @id @default(autoincrement())
+  data         DateTime
+  horarioInicio String
+  horarioFim    String
+  unidadeId    Int
+  areaComumId  Int
+  unidade      Unidade   @relation(fields: [unidadeId], references: [id])
+  areaComum    AreaComum @relation(fields: [areaComumId], references: [id])
+}
+
+model Boleto {
+  id         Int      @id @default(autoincrement())
+  mesRef     String
+  valor      Float
+  status     String
+  vencimento DateTime
+  unidadeId  Int
+  unidade    Unidade @relation(fields: [unidadeId], references: [id])
+}
+
+model Aviso {
+  id          Int     @id @default(autoincrement())
+  titulo      String
+  descricao   String
+  dataCriacao DateTime @default(now())
+}
+
+model LogTransacao {
+  id        Int      @id @default(autoincrement())
+  usuario   String
+  acao      String
+  sql       String
+  timestamp DateTime @default(now())
+  usuarioId Int
+  usuarioFK Usuario @relation(fields: [usuarioId], references: [id])
 }
