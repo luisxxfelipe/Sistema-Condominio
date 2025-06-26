@@ -1,0 +1,108 @@
+{
+  "projectName": "Sistema de Gestão de Condomínios",
+  "description": "Sistema completo para gerenciamento de condomínios com autenticação (sem JWT por enquanto)",
+  "version": "1.0.0",
+  "team": ["Luis Felipe de Sousa França", "Leticia Laurentys", "Marcelo Assunção"],
+  "architecture": {
+    "backend": {
+      "framework": "Node.js + Express",
+      "database": "PostgreSQL",
+      "orm": "Prisma",
+      "auth": "bcryptjs (sem JWT)",
+      "port": 3000,
+      "entryPoint": "Backend/index.js",
+      "status": "funcionando"
+    },
+    "frontend": {
+      "framework": "React + JavaScript (convertido de TypeScript)",
+      "bundler": "Vite",
+      "routing": "React Router DOM",
+      "httpClient": "Axios",
+      "uiLibrary": "Material-UI (@mui/material)",
+      "port": 5173,
+      "entryPoint": "Frontend/src/main.jsx",
+      "status": "funcionando"
+    }
+  },
+  "features": {
+    "completed": [
+      "Estrutura inicial MVC",
+      "CRUD básico (Usuários, Moradores, Unidades)",
+      "Schema Prisma completo",
+      "Migração para PostgreSQL",
+      "Conversão TypeScript → JavaScript",
+      "Sistema de login (sem JWT)",
+      "Tela de cadastro com Material-UI",
+      "Tela de login ajustada",
+      "AuthService implementado",
+      "Roteamento básico funcionando",
+      "API de autenticação (/auth/login, /auth/register)"
+    ],
+    "inProgress": [
+      "Testes de login/cadastro",
+      "Dashboard principal",
+      "Melhorias na UI"
+    ],
+    "planned": [
+      "Implementação JWT",
+      "CRUD Visitantes/Prestadores",
+      "Sistema de Boletos",
+      "Reserva de Áreas Comuns",
+      "Quadro de Avisos",
+      "Sistema de Logs",
+      "Views e Stored Procedures",
+      "Autenticação com níveis de permissão"
+    ]
+  },
+  "monitoring": {
+    "lastUpdate": "2025-06-26T19:15:00Z",
+    "gitStatus": "Sistema de login implementado, conversão TS→JS concluída",
+    "criticalFiles": [
+      "Backend/prisma/schema.prisma",
+      "Backend/src/server.js",
+      "Backend/src/controllers/authController.js",
+      "Backend/src/services/authService.js",
+      "Frontend/src/App.jsx",
+      "Frontend/src/pages/Login/index.jsx",
+      "Frontend/src/pages/Cadastro/index.jsx",
+      "Frontend/src/services/authService.js",
+      "Frontend/src/services/usuarioService.js",
+      "Backend/.env",
+      "Frontend/.env"
+    ],
+    "currentIssues": [],
+    "nextSteps": [
+      "Testar login completo",
+      "Criar dashboard",
+      "Implementar middleware de autenticação",
+      "Criar páginas de CRUD"
+    ]
+  },
+  "environment": {
+    "backend": {
+      "url": "http://localhost:3000",
+      "database": "postgresql://postgres:root@localhost:5432/condominio",
+      "routes": [
+        "GET / - Welcome message",
+        "POST /auth/login - Autenticação",
+        "POST /auth/register - Cadastro",
+        "GET /usuarios - Listar usuários",
+        "GET /moradores - Listar moradores",
+        "GET /unidades - Listar unidades"
+      ]
+    },
+    "frontend": {
+      "url": "http://localhost:5173",
+      "routes": [
+        "/ - Login page",
+        "/login - Login page",
+        "/cadastro - Cadastro page"
+      ]
+    }
+  },
+  "techStack": {
+    "backend": ["Node.js", "Express", "Prisma", "PostgreSQL", "bcryptjs", "cors"],
+    "frontend": ["React", "JavaScript", "Vite", "Material-UI", "Axios", "React Router"],
+    "tools": ["VS Code", "Git", "npm"]
+  }
+}
