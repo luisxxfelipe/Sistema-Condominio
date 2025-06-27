@@ -1,64 +1,56 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import {
-  Container,
-  Paper,
-  TextField,
-  Button,
-  Typography,
-  Box,
-  Alert,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Select
-} from "@mui/material";
-import { createUsuario } from "@/services/usuarioService";
+import React, { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { TextField, InputAdornment, Box, Typography, Link, MenuItem, FormControl, InputLabel, Select } from "@mui/material"
+import { Person, Email, AccountCircle } from "@mui/icons-material"
+import { createUsuario } from "../../services/usuarioService"
+import { LoginCard } from "../../components/common/LoginCard"
+import { PasswordField } from "../../components/common/PasswordField"
+import { LoadingButton } from "../../components/common/LoadingButton"
+import { ErrorAlert } from "../../components/common/ErrorAlert"
 
 const Cadastro = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     nome: "",
     login: "",
     senha: "",
     confirmarSenha: "",
     tipoPerfil: "usuario"
-  });
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const [loading, setLoading] = useState(false);
+  })
+  const [error, setError] = useState("")
+  const [success, setSuccess] = useState("")
+  const [loading, setLoading] = useState(false)
 
-  const handleChange = (e) => {
+  const handleChange = (field) => (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
-    });
-    setError("");
-  };
+      [field]: e.target.value
+    })
+    if (error) setError("") // Limpa erro quando usuário digita
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-    setSuccess("");
+    e.preventDefault()
+    setLoading(true)
+    setError("")
 
     // Validações
     if (!formData.nome || !formData.login || !formData.senha) {
-      setError("Todos os campos são obrigatórios");
-      setLoading(false);
-      return;
+      setError("Todos os campos são obrigatórios")
+      setLoading(false)
+      return
     }
 
     if (formData.senha !== formData.confirmarSenha) {
-      setError("As senhas não coincidem");
-      setLoading(false);
-      return;
+      setError("As senhas não coincidem")
+      setLoading(false)
+      return
     }
 
     if (formData.senha.length < 6) {
-      setError("A senha deve ter pelo menos 6 caracteres");
-      setLoading(false);
-      return;
+      setError("A senha deve ter pelo menos 6 caracteres")
+      setLoading(false)
+      return
     }
 
     try {
@@ -67,143 +59,131 @@ const Cadastro = () => {
         login: formData.login,
         senha: formData.senha,
         tipoPerfil: formData.tipoPerfil
-      };
+      }
 
-      await createUsuario(userData);
-      setSuccess("Usuário cadastrado com sucesso!");
-
+      await createUsuario(userData)
+      
+      // Mostra sucesso e redireciona
       setTimeout(() => {
-        navigate("/login");
-      }, 2000);
+        navigate("/login")
+      }, 1500)
 
     } catch (error) {
-      setError(error.response?.data?.message || "Erro ao cadastrar usuário. Tente novamente.");
+      setError(error.response?.data?.message || "Erro ao cadastrar usuário. Tente novamente.")
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 8 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
-        <Box sx={{ textAlign: "center", mb: 3 }}>
-          <Typography variant="h4" component="h1" gutterBottom>
-            Cadastro de Usuário
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Sistema de Gestão de Condomínio
-          </Typography>
-        </Box>
+    <LoginCard 
+      title="Criar Conta" 
+      subtitle="Cadastre-se para acessar o sistema"
+    >
+      <Box component="form" onSubmit={handleSubmit}>
+        <ErrorAlert error={error} />
+        
+        <TextField
+          fullWidth
+          label="Nome Completo"
+          value={formData.nome}
+          onChange={handleChange("nome")}
+          margin="normal"
+          required
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Person color="action" />
+              </InputAdornment>
+            ),
+          }}
+        />
 
-        {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {error}
-          </Alert>
-        )}
+        <TextField
+          fullWidth
+          label="Login/Email"
+          value={formData.login}
+          onChange={handleChange("login")}
+          margin="normal"
+          required
+          type="email"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Email color="action" />
+              </InputAdornment>
+            ),
+          }}
+        />
 
-        {success && (
-          <Alert severity="success" sx={{ mb: 2 }}>
-            {success}
-          </Alert>
-        )}
-
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="nome"
-            label="Nome Completo"
-            name="nome"
-            autoComplete="name"
-            autoFocus
-            value={formData.nome}
-            onChange={handleChange}
-            disabled={loading}
-          />
-
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="login"
-            label="Login/Email"
-            name="login"
-            autoComplete="username"
-            value={formData.login}
-            onChange={handleChange}
-            disabled={loading}
-          />
-
-          <FormControl fullWidth margin="normal">
-            <InputLabel id="tipoPerfil-label">Tipo de Perfil</InputLabel>
-            <Select
-              labelId="tipoPerfil-label"
-              id="tipoPerfil"
-              name="tipoPerfil"
-              value={formData.tipoPerfil}
-              label="Tipo de Perfil"
-              onChange={handleChange}
-              disabled={loading}
-            >
-              <MenuItem value="usuario">Usuário</MenuItem>
-              <MenuItem value="gerente">Gerente</MenuItem>
-              <MenuItem value="admin">Administrador</MenuItem>
-            </Select>
-          </FormControl>
-
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="senha"
-            label="Senha"
-            type="password"
-            id="senha"
-            autoComplete="new-password"
-            value={formData.senha}
-            onChange={handleChange}
-            disabled={loading}
-            helperText="Mínimo 6 caracteres"
-          />
-
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="confirmarSenha"
-            label="Confirmar Senha"
-            type="password"
-            id="confirmarSenha"
-            value={formData.confirmarSenha}
-            onChange={handleChange}
-            disabled={loading}
-          />
-
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-            disabled={loading}
-            size="large"
+        <FormControl fullWidth margin="normal">
+          <InputLabel id="tipoPerfil-label">Tipo de Perfil</InputLabel>
+          <Select
+            labelId="tipoPerfil-label"
+            value={formData.tipoPerfil}
+            label="Tipo de Perfil"
+            onChange={handleChange("tipoPerfil")}
+            startAdornment={
+              <InputAdornment position="start">
+                <AccountCircle color="action" />
+              </InputAdornment>
+            }
           >
-            {loading ? "Cadastrando..." : "Cadastrar"}
-          </Button>
+            <MenuItem value="usuario">Usuário</MenuItem>
+            <MenuItem value="gerente">Gerente</MenuItem>
+            <MenuItem value="admin">Administrador</MenuItem>
+          </Select>
+        </FormControl>
 
-          <Box sx={{ textAlign: "center" }}>
-            <Button
-              variant="text"
+        <PasswordField
+          label="Senha"
+          value={formData.senha}
+          onChange={handleChange("senha")}
+          helperText="Mínimo 6 caracteres"
+          required
+        />
+
+        <PasswordField
+          label="Confirmar Senha"
+          value={formData.confirmarSenha}
+          onChange={handleChange("confirmarSenha")}
+          required
+        />
+
+        <LoadingButton
+          type="submit"
+          fullWidth
+          loading={loading}
+          loadingText="Cadastrando..."
+          sx={{ mt: 3, py: 1.5 }}
+        >
+          Criar Conta
+        </LoadingButton>
+
+        <Box textAlign="center" mt={3}>
+          <Typography variant="body2" color="textSecondary">
+            Já tem uma conta?{" "}
+            <Link 
+              component="button"
+              variant="body2"
               onClick={() => navigate("/login")}
-              disabled={loading}
+              sx={{ 
+                cursor: "pointer",
+                fontWeight: "bold",
+                color: "primary.main",
+                textDecoration: "none",
+                "&:hover": {
+                  textDecoration: "underline"
+                }
+              }}
             >
-              Já tem uma conta? Faça login
-            </Button>
-          </Box>
+              Faça login
+            </Link>
+          </Typography>
         </Box>
-      </Paper>
-    </Container>
-  );
-};
+      </Box>
+    </LoginCard>
+  )
+}
 
-export default Cadastro;
+export default Cadastro

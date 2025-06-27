@@ -11,7 +11,7 @@ const getUsuarioById = async (id) => {
 }
 
 const createUsuario = async (usuario) => {
-    const response = await api.post('/auth/register', usuario);
+    const response = await api.post('/usuarios/criar', usuario);
     return response.data;
 }
 
@@ -31,4 +31,12 @@ export {
     createUsuario,
     updateUsuario,
     deleteUsuario
+};
+
+export default {
+    getAll: getUsuarios,
+    getById: getUsuarioById,
+    create: createUsuario,
+    update: updateUsuario,
+    delete: deleteUsuario
 };

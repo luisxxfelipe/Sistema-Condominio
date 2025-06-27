@@ -4,10 +4,7 @@ const unidadeController = {
   getAllUnidades: async (req, res) => {
     try {
       const unidades = await unidadeService.getAll();
-      if (!unidades || unidades.length === 0) {
-        return res.status(404).json({ message: "Nenhuma unidade encontrada" });
-      }
-      res.status(200).json(unidades);
+      res.status(200).json(unidades || []);
     } catch (error) {
       res
         .status(500)

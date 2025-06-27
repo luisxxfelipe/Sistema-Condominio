@@ -13,13 +13,23 @@ const unidadeService = {
     },
 
     async create(data) {
-        return await prisma.unidade.create({data});
+        return await prisma.unidade.create({
+            data: {
+                numero: data.numero,
+                bloco: data.bloco,
+                tipo: data.tipo
+            }
+        });
     },
 
     async update(id, data) {    
         return await prisma.unidade.update({
             where: { id: parseInt(id) },
-            data
+            data: {
+                numero: data.numero,
+                bloco: data.bloco,
+                tipo: data.tipo
+            }
         });
     },
 

@@ -4,10 +4,7 @@ const moradorController = {
   async getAllMoradores(req, res) {
     try {
       const moradores = await moradorService.getAll();
-      if (!moradores || moradores.length === 0) {
-        return res.status(404).json({ message: "Nenhum morador encontrado" });
-      }
-      res.status(200).json(moradores);
+      res.status(200).json(moradores || []);
     } catch (error) {
       res
         .status(500)
@@ -68,6 +65,33 @@ const moradorController = {
       res
         .status(500)
         .json({ message: "Erro ao excluir morador", error: error.message });
+    }
+  },
+
+  async getMoradorByCpf(req, res) {
+    const { cpf } = req.params;
+    try {
+      const morador = await moradorService.getByCpf(cpf);
+      if (!morador) {
+        return res.status(404).json({ message: "Morador não encontrado" });
+      }
+      res.status(200).json(morador);
+    } catch (error) {
+      res
+        .status(500)
+        .json({ message: "Erro ao buscar morador por CPF", error: error.message });
+    }
+  },
+
+  async getMoradoresByUnidade(req, res) {
+    const { unidadeId } = req.params;
+    try {
+      const moradores = await moradorService.getByUnidade(unidadeId);
+      res.status(200).json(moradores);
+    } catch (error) {
+      res
+        .status(500)
+        .json({ message: "Erro ao buscar moradores da unidade", error: error.message });
     }
   },
 };

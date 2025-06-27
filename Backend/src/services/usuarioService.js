@@ -13,13 +13,26 @@ const usuarioService = {
     },
 
     async create(data) {
-        return await prisma.usuario.create({data});
+        console.log("Dados recebidos no usuarioService.create:", data);
+        return await prisma.usuario.create({
+            data: {
+                nome: data.nome,
+                login: data.login,
+                senhaHash: data.senhaHash,
+                tipoPerfil: data.tipoPerfil
+            }
+        });
     },
 
     async update(id, data) {    
         return await prisma.usuario.update({
             where: { id: parseInt(id) },
-            data
+            data: {
+                nome: data.nome,
+                login: data.login,
+                senhaHash: data.senhaHash,
+                tipoPerfil: data.tipoPerfil
+            }
         });
     },
 
