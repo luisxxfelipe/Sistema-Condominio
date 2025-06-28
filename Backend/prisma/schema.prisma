@@ -22,6 +22,7 @@ model Morador {
   nome       String
   cpf        String  @unique
   telefone   String
+  createdAt  DateTime @default(now())
   unidadeId  Int?
   unidade    Unidade? @relation(fields: [unidadeId], references: [id])
 }
@@ -68,6 +69,7 @@ model Reserva {
   data         DateTime
   horarioInicio String
   horarioFim    String
+  createdAt    DateTime @default(now())
   unidadeId    Int
   areaComumId  Int
   unidade      Unidade   @relation(fields: [unidadeId], references: [id])
@@ -80,6 +82,7 @@ model Boleto {
   valor      Float
   status     String
   vencimento DateTime
+  createdAt  DateTime @default(now())
   unidadeId  Int
   unidade    Unidade @relation(fields: [unidadeId], references: [id])
 }

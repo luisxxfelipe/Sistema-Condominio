@@ -35,14 +35,14 @@ Este sistema tem como objetivo o gerenciamento completo de um condomínio, permi
 
 - [x] Estrutura inicial do projeto (frontend + backend)
 - [ ] Autenticação de usuários com níveis de permissão
-- [ ] CRUD de moradores
-- [ ] CRUD de unidades
-- [ ] CRUD de visitantes e prestadores de serviço
-- [ ] Emissão e controle de boletos
-- [ ] Reserva de áreas comuns com validação de horário
-- [ ] Visualização de avisos do condomínio
-- [ ] Views e stored procedures no banco de dados
-- [ ] Logs de transações (ações, usuários, horários e SQL executado)
+- [x] CRUD de moradores
+- [x] CRUD de unidades
+- [x] CRUD de visitantes e prestadores de serviço
+- [x] Emissão e controle de boletos
+- [x] Reserva de áreas comuns com validação de horário
+- [x] Visualização de avisos do condomínio
+- [x] Views e stored procedures no banco de dados
+- [x] Logs de transações (ações, usuários, horários e SQL executado)
 - [ ] Gerenciamento de usuários e permissões conforme perfis
 
 ---

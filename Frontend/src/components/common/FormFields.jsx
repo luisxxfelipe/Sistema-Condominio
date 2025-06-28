@@ -7,10 +7,40 @@ export function FormFields({ fields, initialData, onChange }) {
   // Inicializar dados quando o componente monta ou quando initialData muda
   useEffect(() => {
     if (initialData) {
-      // Editando: usar dados iniciais
-      setFormData(initialData)
+      // Editando: usar dados iniciais e converter datas para formato de input
+      const processedData = { ...initialData }
+      
+      // Converter datas para o formato esperado pelos inputs HTML
+      fields.forEach(field => {
+        if (field.type === "date" && processedData[field.name]) {
+          const date = new Date(processedData[field.name])
+          if (!isNaN(date.getTime())) {
+            processedData[field.name] = date.toISOString().split('T')[0]
+          }
+        } else if (field.type === "datetime-local" && processedData[field.name]) {
+          const date = new Date(processedData[field.name])
+          if (!isNaN(date.getTime())) {
+            // Ajustar para timezone local
+            const offset = date.getTimezoneOffset()
+            const localDate = new Date(date.getTime() - (offset * 60 * 1000))
+            processedData[field.name] = localDate.toISOString().slice(0, 16)
+          }
+        } else if (field.type === "time" && processedData[field.name]) {
+          // Se já é uma string HH:MM, manter como está
+          if (typeof processedData[field.name] === 'string' && processedData[field.name].includes(':')) {
+            // Já está no formato correto
+          } else {
+            const date = new Date(processedData[field.name])
+            if (!isNaN(date.getTime())) {
+              processedData[field.name] = date.toTimeString().slice(0, 5)
+            }
+          }
+        }
+      })
+      
+      setFormData(processedData)
       if (onChange) {
-        onChange(initialData)
+        onChange(processedData)
       }
     } else {
       // Criando: inicializar com valores vazios

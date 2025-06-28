@@ -17,7 +17,7 @@ function Avisos() {
   const columns = [
     { id: "titulo", label: "Título", minWidth: 200 },
     { id: "descricao", label: "Descrição", minWidth: 300 },
-    { id: "dataCriacao", label: "Data de Criação", minWidth: 150 },
+    { id: "dataCriacao", label: "Data de Criação", minWidth: 150, type: "datetime" },
   ]
 
   const actions = [

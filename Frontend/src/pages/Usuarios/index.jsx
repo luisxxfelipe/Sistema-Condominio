@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Box } from "@mui/material"
+import { Box, Alert, Snackbar } from "@mui/material"
 import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material"
 import { PageHeader } from "../../components/common/PageHeader"
 import { DataTable } from "../../components/common/DataTable"
@@ -13,6 +13,8 @@ function Usuarios() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [selectedUsuario, setSelectedUsuario] = useState(null)
   const [formData, setFormData] = useState({})
+  const [error, setError] = useState("")
+  const [success, setSuccess] = useState("")
 
   const columns = [
     { id: "nome", label: "Nome", minWidth: 170 },
@@ -56,9 +58,11 @@ function Usuarios() {
     if (window.confirm("Tem certeza que deseja excluir este usuário?")) {
       try {
         await usuarioService.delete(id)
+        setSuccess("Usuário excluído com sucesso!")
         loadUsuarios()
       } catch (error) {
         console.error("Erro ao excluir usuário:", error)
+        setError(error.response?.data?.message || "Erro ao excluir usuário")
       }
     }
   }
@@ -67,14 +71,18 @@ function Usuarios() {
     try {
       if (selectedUsuario) {
         await usuarioService.update(selectedUsuario.id, formData)
+        setSuccess("Usuário atualizado com sucesso!")
       } else {
         await usuarioService.create(formData)
+        setSuccess("Usuário criado com sucesso!")
       }
       loadUsuarios()
       setDialogOpen(false)
       setSelectedUsuario(null)
+      setFormData({})
     } catch (error) {
       console.error("Erro ao salvar usuário:", error)
+      setError(error.response?.data?.message || "Erro ao salvar usuário")
     }
   }
 
@@ -86,7 +94,7 @@ function Usuarios() {
       { value: "gerente", label: "Gerente" },
       { value: "admin", label: "Administrador" },
     ], required: true },
-    ...(!selectedUsuario ? [{ name: "senhaHash", label: "Senha", type: "password", required: true }] : []),
+    ...(!selectedUsuario ? [{ name: "senha", label: "Senha", type: "password", required: true }] : []),
   ]
 
   return (
@@ -114,6 +122,7 @@ function Usuarios() {
         onClose={() => {
           setDialogOpen(false)
           setSelectedUsuario(null)
+          setFormData({})
         }}
         onSave={handleSave}
         title={selectedUsuario ? "Editar Usuário" : "Novo Usuário"}
@@ -124,6 +133,28 @@ function Usuarios() {
           onChange={setFormData}
         />
       </FormDialog>
+
+      <Snackbar 
+        open={!!error} 
+        autoHideDuration={6000} 
+        onClose={() => setError("")}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={() => setError("")} severity="error">
+          {error}
+        </Alert>
+      </Snackbar>
+
+      <Snackbar 
+        open={!!success} 
+        autoHideDuration={3000} 
+        onClose={() => setSuccess("")}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={() => setSuccess("")} severity="success">
+          {success}
+        </Alert>
+      </Snackbar>
     </Box>
   )
 }

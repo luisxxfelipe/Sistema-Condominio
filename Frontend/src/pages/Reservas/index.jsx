@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Box } from "@mui/material"
+import { Box, Alert, Snackbar } from "@mui/material"
 import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material"
 import { PageHeader } from "../../components/common/PageHeader"
 import { DataTable } from "../../components/common/DataTable"
@@ -17,13 +17,17 @@ function Reservas() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [selectedReserva, setSelectedReserva] = useState(null)
   const [formData, setFormData] = useState({})
+  const [errorMessage, setErrorMessage] = useState("")
+  const [showError, setShowError] = useState(false)
 
   const columns = [
-    { id: "areaComumId", label: "Área Comum", minWidth: 170 },
-    { id: "unidadeId", label: "Unidade", minWidth: 100 },
-    { id: "data", label: "Data", minWidth: 120 },
-    { id: "horarioInicio", label: "Início", minWidth: 100 },
-    { id: "horarioFim", label: "Fim", minWidth: 100 },
+    { id: "areaComum", label: "Área Comum", minWidth: 170,
+      renderCell: (row) => row.areaComum?.nome || `Área ${row.areaComumId}` },
+    { id: "unidade", label: "Unidade", minWidth: 100,
+      renderCell: (row) => row.unidade ? `${row.unidade.numero} - ${row.unidade.bloco || 'S/B'}` : `Unidade ${row.unidadeId}` },
+    { id: "data", label: "Data", minWidth: 120, type: "date" },
+    { id: "horarioInicio", label: "Início", minWidth: 100, type: "time" },
+    { id: "horarioFim", label: "Fim", minWidth: 100, type: "time" },
   ]
 
   const actions = [
@@ -115,6 +119,17 @@ function Reservas() {
       setSelectedReserva(null)
     } catch (error) {
       console.error("Erro ao salvar reserva:", error)
+      
+      // Capturar a mensagem de erro do backend
+      let errorMsg = "Erro ao salvar reserva"
+      if (error.response?.data?.message) {
+        errorMsg = error.response.data.message
+      } else if (error.message) {
+        errorMsg = error.message
+      }
+      
+      setErrorMessage(errorMsg)
+      setShowError(true)
     }
   }
 
@@ -161,6 +176,21 @@ function Reservas() {
           onChange={setFormData}
         />
       </FormDialog>
+
+      <Snackbar 
+        open={showError} 
+        autoHideDuration={6000} 
+        onClose={() => setShowError(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={() => setShowError(false)} 
+          severity="error" 
+          sx={{ width: '100%' }}
+        >
+          {errorMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   )
 }

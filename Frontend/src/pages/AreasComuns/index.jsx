@@ -28,8 +28,6 @@ function AreasComuns() {
       icon: <ViewIcon />,
       name: "Visualizar",
       onClick: (row) => {
-        // Implementar visualização detalhada se necessário
-        console.log("Visualizar área comum:", row)
       },
     },
     {
@@ -77,7 +75,6 @@ function AreasComuns() {
 
   const handleSave = async () => {
     try {
-      console.log("Form data antes de salvar:", formData)
       if (selectedAreaComum) {
         await areaComumService.update(selectedAreaComum.id, formData)
       } else {

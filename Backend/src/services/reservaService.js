@@ -69,7 +69,8 @@ const reservaService = {
     },
 
     async verificarDisponibilidade(areaComumId, data, horarioInicio, horarioFim, excludeReservaId = null) {
-        const dataReserva = new Date(data);
+        // Criar data no timezone local (Brasília) para evitar problemas de fuso horário
+        const dataReserva = new Date(`${data}T12:00:00-03:00`);
         
         const whereClause = {
             areaComumId: parseInt(areaComumId),
@@ -114,9 +115,18 @@ const reservaService = {
     },
 
     async create(data) {
+        // Criar data no timezone local (Brasília) para evitar problemas de fuso horário
+        const dataReserva = new Date(`${data.data}T12:00:00-03:00`);
+        
+        console.log('=== DEBUG CREATE RESERVA ===');
+        console.log('Data original enviada:', data.data);
+        console.log('Data processada para salvar:', dataReserva);
+        console.log('Data ISO:', dataReserva.toISOString());
+        console.log('Data em Brasília:', dataReserva.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }));
+        
         return await prisma.reserva.create({
             data: {
-                data: new Date(data.data),
+                data: dataReserva,
                 horarioInicio: data.horarioInicio,
                 horarioFim: data.horarioFim,
                 unidadeId: parseInt(data.unidadeId),
@@ -130,15 +140,28 @@ const reservaService = {
     },
 
     async update(id, data) {
+        const updateData = {
+            horarioInicio: data.horarioInicio,
+            horarioFim: data.horarioFim,
+            unidadeId: data.unidadeId ? parseInt(data.unidadeId) : undefined,
+            areaComumId: data.areaComumId ? parseInt(data.areaComumId) : undefined
+        };
+
+        // Se há uma nova data, processá-la corretamente
+        if (data.data) {
+            const dataReserva = new Date(`${data.data}T12:00:00-03:00`);
+            updateData.data = dataReserva;
+            
+            console.log('=== DEBUG UPDATE RESERVA ===');
+            console.log('Data original enviada:', data.data);
+            console.log('Data processada para atualizar:', dataReserva);
+            console.log('Data ISO:', dataReserva.toISOString());
+            console.log('Data em Brasília:', dataReserva.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }));
+        }
+
         return await prisma.reserva.update({
             where: { id: parseInt(id) },
-            data: {
-                data: data.data ? new Date(data.data) : undefined,
-                horarioInicio: data.horarioInicio,
-                horarioFim: data.horarioFim,
-                unidadeId: data.unidadeId ? parseInt(data.unidadeId) : undefined,
-                areaComumId: data.areaComumId ? parseInt(data.areaComumId) : undefined
-            },
+            data: updateData,
             include: {
                 unidade: true,
                 areaComum: true

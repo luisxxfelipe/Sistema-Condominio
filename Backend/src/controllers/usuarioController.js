@@ -32,10 +32,36 @@ const usuarioController = {
     try {
       const { nome, login, senha, tipoPerfil } = req.body;
       
-      // Validar se a senha foi fornecida
+      // Validar campos obrigatórios
+      if (!nome) {
+        return res.status(400).json({ 
+          message: "Nome é obrigatório" 
+        });
+      }
+      
+      if (!login) {
+        return res.status(400).json({ 
+          message: "Login é obrigatório" 
+        });
+      }
+      
       if (!senha) {
         return res.status(400).json({ 
           message: "Senha é obrigatória" 
+        });
+      }
+      
+      if (!tipoPerfil) {
+        return res.status(400).json({ 
+          message: "Tipo de perfil é obrigatório" 
+        });
+      }
+      
+      // Validar tipo de perfil
+      const tiposPermitidos = ['usuario', 'gerente', 'admin'];
+      if (!tiposPermitidos.includes(tipoPerfil)) {
+        return res.status(400).json({ 
+          message: "Tipo de perfil inválido. Valores aceitos: " + tiposPermitidos.join(', ')
         });
       }
 
@@ -57,6 +83,13 @@ const usuarioController = {
       
       res.status(201).json(usuarioSemSenha);
     } catch (error) {
+      // Tratar erro de login duplicado
+      if (error.code === 'P2002' && error.meta?.target?.includes('login')) {
+        return res.status(400).json({ 
+          message: "Este login já está sendo utilizado por outro usuário" 
+        });
+      }
+      
       res
         .status(500)
         .json({ message: "Erro ao criar usuário", error: error.message });
@@ -67,6 +100,33 @@ const usuarioController = {
     const { id } = req.params;
     try {
       const { nome, login, senha, tipoPerfil } = req.body;
+      
+      // Validar campos obrigatórios
+      if (!nome) {
+        return res.status(400).json({ 
+          message: "Nome é obrigatório" 
+        });
+      }
+      
+      if (!login) {
+        return res.status(400).json({ 
+          message: "Login é obrigatório" 
+        });
+      }
+      
+      if (!tipoPerfil) {
+        return res.status(400).json({ 
+          message: "Tipo de perfil é obrigatório" 
+        });
+      }
+      
+      // Validar tipo de perfil
+      const tiposPermitidos = ['usuario', 'gerente', 'admin'];
+      if (!tiposPermitidos.includes(tipoPerfil)) {
+        return res.status(400).json({ 
+          message: "Tipo de perfil inválido. Valores aceitos: " + tiposPermitidos.join(', ')
+        });
+      }
       
       // Preparar dados para atualização
       const dadosUsuario = {
@@ -90,6 +150,13 @@ const usuarioController = {
       
       res.status(200).json(usuarioSemSenha);
     } catch (error) {
+      // Tratar erro de login duplicado
+      if (error.code === 'P2002' && error.meta?.target?.includes('login')) {
+        return res.status(400).json({ 
+          message: "Este login já está sendo utilizado por outro usuário" 
+        });
+      }
+      
       res
         .status(500)
         .json({ message: "Erro ao atualizar usuário", error: error.message });

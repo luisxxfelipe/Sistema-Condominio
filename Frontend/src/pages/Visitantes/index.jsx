@@ -19,7 +19,7 @@ function Visitantes() {
   const columns = [
     { id: "nome", label: "Nome", minWidth: 170 },
     { id: "documento", label: "Documento", minWidth: 130 },
-    { id: "dataVisita", label: "Data da Visita", minWidth: 120 },
+    { id: "dataVisita", label: "Data da Visita", minWidth: 120, type: "datetime" },
     { id: "unidadeId", label: "Unidade", minWidth: 100 },
   ]
 

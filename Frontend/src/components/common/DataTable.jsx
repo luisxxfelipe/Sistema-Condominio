@@ -16,6 +16,7 @@ import {
 } from "@mui/material"
 import { Edit, Delete, Visibility } from "@mui/icons-material"
 import { useState } from "react"
+import { formatDateBR, formatDateTimeBR, formatTimeBR } from "../../utils/dateFormat"
 
 export function DataTable({
   data = [],
@@ -73,9 +74,11 @@ export function DataTable({
           currency: "BRL",
         }).format(value || 0)
       case "date":
-        return value ? new Date(value).toLocaleDateString("pt-BR") : "-"
+        return formatDateBR(value)
       case "datetime":
-        return value ? new Date(value).toLocaleString("pt-BR") : "-"
+        return formatDateTimeBR(value)
+      case "time":
+        return formatTimeBR(value)
       case "avatar":
         return (
           <Avatar sx={{ width: 32, height: 32, bgcolor: "#2BD2FF" }}>

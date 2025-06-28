@@ -13,7 +13,6 @@ const usuarioService = {
     },
 
     async create(data) {
-        console.log("Dados recebidos no usuarioService.create:", data);
         return await prisma.usuario.create({
             data: {
                 nome: data.nome,
@@ -25,14 +24,17 @@ const usuarioService = {
     },
 
     async update(id, data) {    
+        // Filtrar apenas os campos que foram fornecidos
+        const updateData = {};
+        
+        if (data.nome !== undefined) updateData.nome = data.nome;
+        if (data.login !== undefined) updateData.login = data.login;
+        if (data.senhaHash !== undefined) updateData.senhaHash = data.senhaHash;
+        if (data.tipoPerfil !== undefined) updateData.tipoPerfil = data.tipoPerfil;
+        
         return await prisma.usuario.update({
             where: { id: parseInt(id) },
-            data: {
-                nome: data.nome,
-                login: data.login,
-                senhaHash: data.senhaHash,
-                tipoPerfil: data.tipoPerfil
-            }
+            data: updateData
         });
     },
 
