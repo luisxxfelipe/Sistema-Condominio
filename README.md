@@ -8,6 +8,7 @@ Este sistema tem como objetivo o gerenciamento completo de um condomínio, permi
 - Emissão e gerenciamento de boletos de condomínio
 - Reserva de áreas comuns (salão de festas, churrasqueira, etc.)
 - Quadro de avisos para comunicação interna
+- Logs
 
 ---
 
@@ -34,7 +35,7 @@ Este sistema tem como objetivo o gerenciamento completo de um condomínio, permi
 ## Funcionalidades Previstas
 
 - [x] Estrutura inicial do projeto (frontend + backend)
-- [ ] Autenticação de usuários com níveis de permissão
+- [x] Autenticação de usuários com níveis de permissão
 - [x] CRUD de moradores
 - [x] CRUD de unidades
 - [x] CRUD de visitantes e prestadores de serviço
@@ -43,7 +44,7 @@ Este sistema tem como objetivo o gerenciamento completo de um condomínio, permi
 - [x] Visualização de avisos do condomínio
 - [x] Views e stored procedures no banco de dados
 - [x] Logs de transações (ações, usuários, horários e SQL executado)
-- [ ] Gerenciamento de usuários e permissões conforme perfis
+- [x] Gerenciamento de usuários e permissões conforme perfis
 
 ---
 
