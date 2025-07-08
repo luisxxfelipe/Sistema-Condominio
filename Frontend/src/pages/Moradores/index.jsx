@@ -5,6 +5,7 @@ import { PageHeader } from "../../components/common/PageHeader"
 import { DataTable } from "../../components/common/DataTable"
 import { FormDialog } from "../../components/common/FormDialog"
 import { FormFields } from "../../components/common/FormFields"
+import { withPermission, usePermissions } from "../../hooks/usePermissions"
 import moradorService from "../../services/moradorService"
 import unidadeService from "../../services/unidadeService"
 
@@ -15,6 +16,8 @@ function Moradores() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [selectedMorador, setSelectedMorador] = useState(null)
   const [formData, setFormData] = useState({})
+  
+  const { canPerformAction } = usePermissions()
 
   const columns = [
     { id: "nome", label: "Nome", minWidth: 170 },
@@ -24,19 +27,19 @@ function Moradores() {
   ]
 
   const actions = [
-    {
+    ...(canPerformAction('update') ? [{
       icon: <EditIcon />,
       name: "Editar",
       onClick: (row) => {
         setSelectedMorador(row)
         setDialogOpen(true)
       },
-    },
-    {
+    }] : []),
+    ...(canPerformAction('delete') ? [{
       icon: <DeleteIcon />,
       name: "Excluir",
       onClick: (row) => handleDelete(row.id),
-    },
+    }] : []),
   ]
 
   useEffect(() => {
@@ -106,12 +109,12 @@ function Moradores() {
       <PageHeader
         title="Gerenciamento de Moradores"
         subtitle="Cadastre e gerencie os moradores do condomínio"
-        action={<AddIcon />}
-        actionLabel="Novo Morador"
-        onAction={() => {
+        action={canPerformAction('create') ? <AddIcon /> : null}
+        actionLabel={canPerformAction('create') ? "Novo Morador" : null}
+        onAction={canPerformAction('create') ? () => {
           setSelectedMorador(null)
           setDialogOpen(true)
-        }}
+        } : null}
       />
 
       <DataTable
@@ -140,4 +143,4 @@ function Moradores() {
   )
 }
 
-export default Moradores
+export default withPermission(Moradores, "moradores", "read");

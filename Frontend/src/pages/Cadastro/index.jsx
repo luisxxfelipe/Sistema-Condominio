@@ -1,56 +1,66 @@
-import React, { useState } from "react"
-import { useNavigate } from "react-router-dom"
-import { TextField, InputAdornment, Box, Typography, Link, MenuItem, FormControl, InputLabel, Select } from "@mui/material"
-import { Person, Email, AccountCircle } from "@mui/icons-material"
-import { createUsuario } from "../../services/usuarioService"
-import { LoginCard } from "../../components/common/LoginCard"
-import { PasswordField } from "../../components/common/PasswordField"
-import { LoadingButton } from "../../components/common/LoadingButton"
-import { ErrorAlert } from "../../components/common/ErrorAlert"
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  TextField,
+  InputAdornment,
+  Box,
+  Typography,
+  Link,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Select,
+} from "@mui/material";
+import { Person, Email, AccountCircle } from "@mui/icons-material";
+import { createUsuario } from "../../services/usuarioService";
+import { LoginCard } from "../../components/common/LoginCard";
+import { PasswordField } from "../../components/common/PasswordField";
+import { LoadingButton } from "../../components/common/LoadingButton";
+import { ErrorAlert } from "../../components/common/ErrorAlert";
 
 const Cadastro = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     nome: "",
     login: "",
     senha: "",
     confirmarSenha: "",
-    tipoPerfil: "usuario"
-  })
-  const [error, setError] = useState("")
-  const [success, setSuccess] = useState("")
-  const [loading, setLoading] = useState(false)
+    tipoPerfil: "usuario",
+  });
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (field) => (e) => {
     setFormData({
       ...formData,
-      [field]: e.target.value
-    })
-    if (error) setError("") // Limpa erro quando usuário digita
-  }
+      [field]: e.target.value,
+    });
+    if (error) setError(""); // Limpa erro quando usuário digita
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError("")
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
     // Validações
     if (!formData.nome || !formData.login || !formData.senha) {
-      setError("Todos os campos são obrigatórios")
-      setLoading(false)
-      return
+      setError("Todos os campos são obrigatórios");
+      setLoading(false);
+      return;
     }
 
     if (formData.senha !== formData.confirmarSenha) {
-      setError("As senhas não coincidem")
-      setLoading(false)
-      return
+      setError("As senhas não coincidem");
+      setLoading(false);
+      return;
     }
 
     if (formData.senha.length < 6) {
-      setError("A senha deve ter pelo menos 6 caracteres")
-      setLoading(false)
-      return
+      setError("A senha deve ter pelo menos 6 caracteres");
+      setLoading(false);
+      return;
     }
 
     try {
@@ -58,31 +68,33 @@ const Cadastro = () => {
         nome: formData.nome,
         login: formData.login,
         senha: formData.senha,
-        tipoPerfil: formData.tipoPerfil
-      }
+        tipoPerfil: formData.tipoPerfil,
+      };
 
-      await createUsuario(userData)
-      
+      await createUsuario(userData);
+
       // Mostra sucesso e redireciona
       setTimeout(() => {
-        navigate("/login")
-      }, 1500)
-
+        navigate("/login");
+      }, 1500);
     } catch (error) {
-      setError(error.response?.data?.message || "Erro ao cadastrar usuário. Tente novamente.")
+      setError(
+        error.response?.data?.message ||
+          "Erro ao cadastrar usuário. Tente novamente."
+      );
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <LoginCard 
-      title="Criar Conta" 
+    <LoginCard
+      title="Criar Conta"
       subtitle="Cadastre-se para acessar o sistema"
     >
       <Box component="form" onSubmit={handleSubmit}>
         <ErrorAlert error={error} />
-        
+
         <TextField
           fullWidth
           label="Nome Completo"
@@ -132,6 +144,10 @@ const Cadastro = () => {
             <MenuItem value="usuario">Usuário</MenuItem>
             <MenuItem value="gerente">Gerente</MenuItem>
             <MenuItem value="admin">Administrador</MenuItem>
+            <MenuItem value="convidado">Convidado/Consulta</MenuItem>
+            <MenuItem value="leitura">Operacional - Leitura</MenuItem>
+            <MenuItem value="escrita">Operacional - Escrita</MenuItem>
+            <MenuItem value="auditor">Manutenção/Auditor</MenuItem>
           </Select>
         </FormControl>
 
@@ -163,18 +179,18 @@ const Cadastro = () => {
         <Box textAlign="center" mt={3}>
           <Typography variant="body2" color="textSecondary">
             Já tem uma conta?{" "}
-            <Link 
+            <Link
               component="button"
               variant="body2"
               onClick={() => navigate("/login")}
-              sx={{ 
+              sx={{
                 cursor: "pointer",
                 fontWeight: "bold",
                 color: "primary.main",
                 textDecoration: "none",
                 "&:hover": {
-                  textDecoration: "underline"
-                }
+                  textDecoration: "underline",
+                },
               }}
             >
               Faça login
@@ -183,7 +199,7 @@ const Cadastro = () => {
         </Box>
       </Box>
     </LoginCard>
-  )
-}
+  );
+};
 
-export default Cadastro
+export default Cadastro;

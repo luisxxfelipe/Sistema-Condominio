@@ -1,5 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
+const { getUserPermissions } = require('../utils/permissions');
 
 const prisma = new PrismaClient();
 
@@ -36,12 +37,16 @@ const authService = {
         };
       }
 
-      // Remover senha do retorno
+      // Remover senha do retorno e adicionar permissões
       const { senhaHash, ...usuarioSemSenha } = usuario;
+      const permissoes = getUserPermissions(usuario.tipoPerfil);
 
       return {
         sucesso: true,
-        usuario: usuarioSemSenha
+        usuario: {
+          ...usuarioSemSenha,
+          permissoes
+        }
       };
 
     } catch (error) {

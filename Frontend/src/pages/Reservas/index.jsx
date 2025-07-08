@@ -5,6 +5,7 @@ import { PageHeader } from "../../components/common/PageHeader"
 import { DataTable } from "../../components/common/DataTable"
 import { FormDialog } from "../../components/common/FormDialog"
 import { FormFields } from "../../components/common/FormFields"
+import { withPermission, usePermissions } from "../../hooks/usePermissions"
 import reservaService from "../../services/reservaService"
 import areaComumService from "../../services/areaComumService"
 import unidadeService from "../../services/unidadeService"
@@ -20,6 +21,8 @@ function Reservas() {
   const [errorMessage, setErrorMessage] = useState("")
   const [showError, setShowError] = useState(false)
 
+  const { canPerformAction } = usePermissions()
+
   const columns = [
     { id: "areaComum", label: "Área Comum", minWidth: 170,
       renderCell: (row) => row.areaComum?.nome || `Área ${row.areaComumId}` },
@@ -31,19 +34,19 @@ function Reservas() {
   ]
 
   const actions = [
-    {
+    ...(canPerformAction('update') ? [{
       icon: <EditIcon />,
       name: "Editar",
       onClick: (row) => {
         setSelectedReserva(row)
         setDialogOpen(true)
       },
-    },
-    {
+    }] : []),
+    ...(canPerformAction('delete') ? [{
       icon: <DeleteIcon />,
       name: "Cancelar",
       onClick: (row) => handleDelete(row.id),
-    },
+    }] : []),
   ]
 
   useEffect(() => {
@@ -146,12 +149,12 @@ function Reservas() {
       <PageHeader
         title="Reservas de Áreas Comuns"
         subtitle="Gerencie as reservas das áreas comuns do condomínio"
-        action={<AddIcon />}
-        actionLabel="Nova Reserva"
-        onAction={() => {
+        action={canPerformAction('create') ? <AddIcon /> : null}
+        actionLabel={canPerformAction('create') ? "Nova Reserva" : null}
+        onAction={canPerformAction('create') ? () => {
           setSelectedReserva(null)
           setDialogOpen(true)
-        }}
+        } : null}
       />
 
       <DataTable
@@ -195,4 +198,4 @@ function Reservas() {
   )
 }
 
-export default Reservas
+export default withPermission(Reservas, "reservas", "read");

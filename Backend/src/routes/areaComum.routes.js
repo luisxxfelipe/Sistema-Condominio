@@ -1,5 +1,6 @@
 const express = require('express');
 const areaComumController = require('../controllers/areaComumController');
+const logMiddleware = require('../middlewares/logMiddleware');
 
 const router = express.Router();
 
@@ -7,8 +8,8 @@ const router = express.Router();
 router.get('/', areaComumController.getAllAreasComuns);
 router.get('/disponiveis', areaComumController.getAreasDisponiveis);
 router.get('/:id', areaComumController.getAreaComumById);
-router.post('/', areaComumController.createAreaComum);
-router.put('/:id', areaComumController.updateAreaComum);
-router.delete('/:id', areaComumController.deleteAreaComum);
+router.post('/', logMiddleware('CRIAR_AREA_COMUM'), areaComumController.createAreaComum);
+router.put('/:id', logMiddleware('EDITAR_AREA_COMUM'), areaComumController.updateAreaComum);
+router.delete('/:id', logMiddleware('EXCLUIR_AREA_COMUM'), areaComumController.deleteAreaComum);
 
 module.exports = router;

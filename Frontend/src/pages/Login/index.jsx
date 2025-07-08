@@ -7,12 +7,14 @@ import { LoginCard } from "../../components/common/LoginCard"
 import { PasswordField } from "../../components/common/PasswordField"
 import { LoadingButton } from "../../components/common/LoadingButton"
 import { ErrorAlert } from "../../components/common/ErrorAlert"
+import { usePermissions } from "../../hooks/usePermissions"
 
 const LoginPage = () => {
   const [form, setForm] = useState({ login: "", senha: "" })
   const [erro, setErro] = useState("")
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
+  const { updateUser } = usePermissions()
 
   const handleChange = (field) => (e) => {
     setForm({ ...form, [field]: e.target.value })
@@ -27,13 +29,18 @@ const LoginPage = () => {
     try {
       const usuario = await authService.login(form.login, form.senha)
       if (usuario) {
+        updateUser(usuario) // Atualizar contexto de permissões
         navigate("/dashboard")
       } else {
         setErro("Usuário ou senha inválidos.")
       }
     } catch (error) {
       console.error("Erro ao fazer login:", error)
-      setErro("Ocorreu um erro ao fazer login. Tente novamente.")
+      if (error.response?.status === 401) {
+        setErro("Usuário ou senha inválidos.")
+      } else {
+        setErro("Ocorreu um erro ao fazer login. Tente novamente.")
+      }
     } finally {
       setLoading(false)
     }

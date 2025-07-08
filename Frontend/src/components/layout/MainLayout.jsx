@@ -24,21 +24,25 @@ import {
   Announcement as AnnouncementIcon,
   ExitToApp as LogoutIcon,
   Person as PersonIcon,
+  Assignment as LogIcon,
 } from "@mui/icons-material"
 import { useNavigate, useLocation } from "react-router-dom"
+import { usePermissions } from "../../hooks/usePermissions"
+import authService from "../../services/authService"
 
 const drawerWidth = 280
 
-const menuItems = [
-  { text: "Dashboard", icon: <DashboardIcon />, path: "/dashboard" },
-  { text: "Moradores", icon: <PeopleIcon />, path: "/moradores" },
-  { text: "Unidades", icon: <HomeIcon />, path: "/unidades" },
-  { text: "Visitantes", icon: <SecurityIcon />, path: "/visitantes" },
-  { text: "Reservas", icon: <CalendarIcon />, path: "/reservas" },
-  { text: "Áreas Comuns", icon: <HomeIcon />, path: "/areas-comuns" },
-  { text: "Boletos", icon: <MoneyIcon />, path: "/boletos" },
-  { text: "Avisos", icon: <AnnouncementIcon />, path: "/avisos" },
-  { text: "Usuários", icon: <PersonIcon />, path: "/usuarios" },
+const allMenuItems = [
+  { text: "Dashboard", icon: <DashboardIcon />, path: "/dashboard", module: "dashboard" },
+  { text: "Moradores", icon: <PeopleIcon />, path: "/moradores", module: "moradores" },
+  { text: "Unidades", icon: <HomeIcon />, path: "/unidades", module: "unidades" },
+  { text: "Visitantes", icon: <SecurityIcon />, path: "/visitantes", module: "visitantes" },
+  { text: "Reservas", icon: <CalendarIcon />, path: "/reservas", module: "reservas" },
+  { text: "Áreas Comuns", icon: <HomeIcon />, path: "/areas-comuns", module: "areas-comuns" },
+  { text: "Boletos", icon: <MoneyIcon />, path: "/boletos", module: "boletos" },
+  { text: "Avisos", icon: <AnnouncementIcon />, path: "/avisos", module: "avisos" },
+  { text: "Usuários", icon: <PersonIcon />, path: "/usuarios", module: "usuarios" },
+  { text: "Logs", icon: <LogIcon />, path: "/logs", module: "logs" },
 ]
 
 export function MainLayout({ children }) {
@@ -47,14 +51,17 @@ export function MainLayout({ children }) {
   const location = useLocation()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("md"))
+  const { hasAccess, user } = usePermissions()
+
+  // Filtrar menu items baseado nas permissões do usuário
+  const menuItems = allMenuItems.filter(item => hasAccess(item.module))
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen)
   }
 
   const handleLogout = () => {
-    localStorage.removeItem("token")
-    localStorage.removeItem("user")
+    authService.logout()
     navigate("/login")
   }
 
@@ -105,6 +112,18 @@ export function MainLayout({ children }) {
           </Typography>
         </Box>
       </Box>
+
+      {/* Informações do usuário */}
+      {user && (
+        <Box sx={{ p: 2, backgroundColor: "rgba(0,0,0,0.05)" }}>
+          <Typography variant="body2" fontWeight="bold" sx={{ mb: 0.5 }}>
+            {user.nome}
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            {user.permissoes?.name || user.tipoPerfil}
+          </Typography>
+        </Box>
+      )}
 
       <Divider />
 

@@ -5,6 +5,7 @@ import { PageHeader } from "../../components/common/PageHeader"
 import { DataTable } from "../../components/common/DataTable"
 import { FormDialog } from "../../components/common/FormDialog"
 import { FormFields } from "../../components/common/FormFields"
+import { withPermission, usePermissions } from "../../hooks/usePermissions"
 import avisoService from "../../services/avisoService"
 
 function Avisos() {
@@ -14,6 +15,8 @@ function Avisos() {
   const [selectedAviso, setSelectedAviso] = useState(null)
   const [formData, setFormData] = useState({})
 
+  const { canPerformAction } = usePermissions()
+
   const columns = [
     { id: "titulo", label: "Título", minWidth: 200 },
     { id: "descricao", label: "Descrição", minWidth: 300 },
@@ -21,19 +24,19 @@ function Avisos() {
   ]
 
   const actions = [
-    {
+    ...(canPerformAction('update') ? [{
       icon: <EditIcon />,
       name: "Editar",
       onClick: (row) => {
         setSelectedAviso(row)
         setDialogOpen(true)
       },
-    },
-    {
+    }] : []),
+    ...(canPerformAction('delete') ? [{
       icon: <DeleteIcon />,
       name: "Excluir",
       onClick: (row) => handleDelete(row.id),
-    },
+    }] : []),
   ]
 
   useEffect(() => {
@@ -88,12 +91,12 @@ function Avisos() {
       <PageHeader
         title="Avisos e Comunicados"
         subtitle="Publique e gerencie avisos para os moradores"
-        action={<AddIcon />}
-        actionLabel="Novo Aviso"
-        onAction={() => {
+        action={canPerformAction('create') ? <AddIcon /> : null}
+        actionLabel={canPerformAction('create') ? "Novo Aviso" : null}
+        onAction={canPerformAction('create') ? () => {
           setSelectedAviso(null)
           setDialogOpen(true)
-        }}
+        } : null}
       />
 
       <DataTable

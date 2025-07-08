@@ -5,6 +5,7 @@ import { PageHeader } from "../../components/common/PageHeader"
 import { DataTable } from "../../components/common/DataTable"
 import { FormDialog } from "../../components/common/FormDialog"
 import { FormFields } from "../../components/common/FormFields"
+import { withPermission, usePermissions } from "../../hooks/usePermissions"
 import unidadeService from "../../services/unidadeService"
 
 function Unidades() {
@@ -14,6 +15,8 @@ function Unidades() {
   const [selectedUnidade, setSelectedUnidade] = useState(null)
   const [formData, setFormData] = useState({})
 
+  const { canPerformAction } = usePermissions()
+
   const columns = [
     { id: "numero", label: "Número", minWidth: 100 },
     { id: "bloco", label: "Bloco", minWidth: 100 },
@@ -21,19 +24,19 @@ function Unidades() {
   ]
 
   const actions = [
-    {
+    ...(canPerformAction('update') ? [{
       icon: <EditIcon />,
       name: "Editar",
       onClick: (row) => {
         setSelectedUnidade(row)
         setDialogOpen(true)
       },
-    },
-    {
+    }] : []),
+    ...(canPerformAction('delete') ? [{
       icon: <DeleteIcon />,
       name: "Excluir",
       onClick: (row) => handleDelete(row.id),
-    },
+    }] : []),
   ]
 
   useEffect(() => {
@@ -89,12 +92,12 @@ function Unidades() {
       <PageHeader
         title="Gerenciamento de Unidades"
         subtitle="Cadastre e gerencie as unidades do condomínio"
-        action={<AddIcon />}
-        actionLabel="Nova Unidade"
-        onAction={() => {
+        action={canPerformAction('create') ? <AddIcon /> : null}
+        actionLabel={canPerformAction('create') ? "Nova Unidade" : null}
+        onAction={canPerformAction('create') ? () => {
           setSelectedUnidade(null)
           setDialogOpen(true)
-        }}
+        } : null}
       />
 
       <DataTable
@@ -123,4 +126,4 @@ function Unidades() {
   )
 }
 
-export default Unidades
+export default withPermission(Unidades, "unidades", "read");

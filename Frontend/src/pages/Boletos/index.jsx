@@ -5,6 +5,7 @@ import { PageHeader } from "../../components/common/PageHeader"
 import { DataTable } from "../../components/common/DataTable"
 import { FormDialog } from "../../components/common/FormDialog"
 import { FormFields } from "../../components/common/FormFields"
+import { withPermission, usePermissions } from "../../hooks/usePermissions"
 import boletoService from "../../services/boletoService"
 import moradorService from "../../services/moradorService"
 import unidadeService from "../../services/unidadeService"
@@ -18,6 +19,8 @@ function Boletos() {
   const [selectedBoleto, setSelectedBoleto] = useState(null)
   const [formData, setFormData] = useState({})
 
+  const { canPerformAction } = usePermissions()
+
   const columns = [
     { id: "id", label: "ID", minWidth: 80 },
     { id: "mesRef", label: "Mês/Ano Ref.", minWidth: 120 },
@@ -29,24 +32,24 @@ function Boletos() {
   ]
 
   const actions = [
-    {
+    ...(canPerformAction('update') ? [{
       icon: <EditIcon />,
       name: "Editar",
       onClick: (row) => {
         setSelectedBoleto(row)
         setDialogOpen(true)
       },
-    },
-    {
+    }] : []),
+    ...(canPerformAction('update') ? [{
       icon: <PaymentIcon />,
       name: "Marcar como Pago",
       onClick: (row) => handlePagar(row.id),
-    },
-    {
+    }] : []),
+    ...(canPerformAction('delete') ? [{
       icon: <DeleteIcon />,
       name: "Excluir",
       onClick: (row) => handleDelete(row.id),
-    },
+    }] : []),
   ]
 
   useEffect(() => {
@@ -145,12 +148,12 @@ function Boletos() {
       <PageHeader
         title="Gerenciamento de Boletos"
         subtitle="Emita e gerencie os boletos do condomínio"
-        action={<AddIcon />}
-        actionLabel="Novo Boleto"
-        onAction={() => {
+        action={canPerformAction('create') ? <AddIcon /> : null}
+        actionLabel={canPerformAction('create') ? "Novo Boleto" : null}
+        onAction={canPerformAction('create') ? () => {
           setSelectedBoleto(null)
           setDialogOpen(true)
-        }}
+        } : null}
       />
 
       <DataTable
@@ -179,4 +182,4 @@ function Boletos() {
   )
 }
 
-export default Boletos
+export default withPermission(Boletos, "boletos", "read");

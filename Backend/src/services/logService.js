@@ -99,14 +99,20 @@ const logService = {
     },
 
     async create(data) {
+        const logData = {
+            usuario: data.usuario,
+            acao: data.acao,
+            sql: data.sql,
+            timestamp: new Date()
+        };
+
+        // Adicionar usuarioId apenas se fornecido
+        if (data.usuarioId) {
+            logData.usuarioId = parseInt(data.usuarioId);
+        }
+
         return await prisma.logTransacao.create({
-            data: {
-                usuario: data.usuario,
-                acao: data.acao,
-                sql: data.sql,
-                usuarioId: parseInt(data.usuarioId),
-                timestamp: new Date()
-            },
+            data: logData,
             include: {
                 usuarioFK: {
                     select: {

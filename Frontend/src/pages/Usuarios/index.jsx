@@ -5,6 +5,7 @@ import { PageHeader } from "../../components/common/PageHeader"
 import { DataTable } from "../../components/common/DataTable"
 import { FormDialog } from "../../components/common/FormDialog"
 import { FormFields } from "../../components/common/FormFields"
+import { withPermission, usePermissions } from "../../hooks/usePermissions"
 import usuarioService from "../../services/usuarioService"
 
 function Usuarios() {
@@ -15,6 +16,8 @@ function Usuarios() {
   const [formData, setFormData] = useState({})
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
+  
+  const { canPerformAction } = usePermissions()
 
   const columns = [
     { id: "nome", label: "Nome", minWidth: 170 },
@@ -23,19 +26,19 @@ function Usuarios() {
   ]
 
   const actions = [
-    {
+    ...(canPerformAction('update') ? [{
       icon: <EditIcon />,
       name: "Editar",
       onClick: (row) => {
         setSelectedUsuario(row)
         setDialogOpen(true)
       },
-    },
-    {
+    }] : []),
+    ...(canPerformAction('delete') ? [{
       icon: <DeleteIcon />,
       name: "Excluir",
       onClick: (row) => handleDelete(row.id),
-    },
+    }] : []),
   ]
 
   useEffect(() => {
@@ -90,9 +93,12 @@ function Usuarios() {
     { name: "nome", label: "Nome Completo", required: true },
     { name: "login", label: "Login/Email", required: true },
     { name: "tipoPerfil", label: "Tipo de Perfil", type: "select", options: [
-      { value: "usuario", label: "Usuário" },
-      { value: "gerente", label: "Gerente" },
-      { value: "admin", label: "Administrador" },
+      { value: "convidado", label: "Convidado/Consulta" },
+      { value: "leitura", label: "Operacional - Leitura" },
+      { value: "escrita", label: "Operacional - Escrita" },
+      { value: "gerente", label: "Gerente/Supervisor" },
+      { value: "admin", label: "Administrador Geral" },
+      { value: "auditor", label: "Manutenção/Auditor" },
     ], required: true },
     ...(!selectedUsuario ? [{ name: "senha", label: "Senha", type: "password", required: true }] : []),
   ]
@@ -102,12 +108,12 @@ function Usuarios() {
       <PageHeader
         title="Gerenciamento de Usuários"
         subtitle="Gerencie os usuários e suas permissões no sistema"
-        action={<AddIcon />}
-        actionLabel="Novo Usuário"
-        onAction={() => {
+        action={canPerformAction('create') ? <AddIcon /> : null}
+        actionLabel={canPerformAction('create') ? "Novo Usuário" : null}
+        onAction={canPerformAction('create') ? () => {
           setSelectedUsuario(null)
           setDialogOpen(true)
-        }}
+        } : null}
       />
 
       <DataTable
@@ -159,4 +165,4 @@ function Usuarios() {
   )
 }
 
-export default Usuarios
+export default withPermission(Usuarios, "usuarios", "read");

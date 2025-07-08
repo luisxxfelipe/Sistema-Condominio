@@ -5,6 +5,7 @@ import { PageHeader } from "../../components/common/PageHeader"
 import { DataTable } from "../../components/common/DataTable"
 import { FormDialog } from "../../components/common/FormDialog"
 import { FormFields } from "../../components/common/FormFields"
+import { withPermission, usePermissions } from "../../hooks/usePermissions"
 import visitanteService from "../../services/visitanteService"
 import unidadeService from "../../services/unidadeService"
 
@@ -16,6 +17,8 @@ function Visitantes() {
   const [selectedVisitante, setSelectedVisitante] = useState(null)
   const [formData, setFormData] = useState({})
 
+  const { canPerformAction } = usePermissions()
+
   const columns = [
     { id: "nome", label: "Nome", minWidth: 170 },
     { id: "documento", label: "Documento", minWidth: 130 },
@@ -24,19 +27,19 @@ function Visitantes() {
   ]
 
   const actions = [
-    {
+    ...(canPerformAction('update') ? [{
       icon: <EditIcon />,
       name: "Editar",
       onClick: (row) => {
         setSelectedVisitante(row)
         setDialogOpen(true)
       },
-    },
-    {
+    }] : []),
+    ...(canPerformAction('delete') ? [{
       icon: <DeleteIcon />,
       name: "Excluir",
       onClick: (row) => handleDelete(row.id),
-    },
+    }] : []),
   ]
 
   useEffect(() => {
@@ -106,12 +109,12 @@ function Visitantes() {
       <PageHeader
         title="Controle de Visitantes"
         subtitle="Registre e acompanhe os visitantes do condomínio"
-        action={<AddIcon />}
-        actionLabel="Novo Visitante"
-        onAction={() => {
+        action={canPerformAction('create') ? <AddIcon /> : null}
+        actionLabel={canPerformAction('create') ? "Novo Visitante" : null}
+        onAction={canPerformAction('create') ? () => {
           setSelectedVisitante(null)
           setDialogOpen(true)
-        }}
+        } : null}
       />
 
       <DataTable
@@ -140,4 +143,4 @@ function Visitantes() {
   )
 }
 
-export default Visitantes
+export default withPermission(Visitantes, "visitantes", "read");

@@ -3,19 +3,18 @@ import api from './api';
 const login = async (login, senha) => {
     try {
         const response = await api.post('/auth/login', { login, senha });
-        const {token, usuario} = response.data;
+        const { usuario } = response.data;
 
-        localStorage.setItem('token', token);
         localStorage.setItem('usuario', JSON.stringify(usuario));
 
         return usuario;
     } catch (error) {
         console.error('Erro ao fazer login:', error);
+        throw error;
     }
 }
 
 const logout = () => {
-    localStorage.removeItem('token');
     localStorage.removeItem('usuario');
 }
 
@@ -25,7 +24,7 @@ const getUsuarioLogado = () => {
 }
 
 const getToken = () => {
-    return localStorage.getItem('token');
+    return null; // Removendo token por enquanto
 }
 
 const authService = {

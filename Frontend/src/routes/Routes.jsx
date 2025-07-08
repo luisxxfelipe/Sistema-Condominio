@@ -10,13 +10,15 @@ import Boletos from '../pages/Boletos/index.jsx'
 import Avisos from '../pages/Avisos/index.jsx'
 import Usuarios from '../pages/Usuarios/index.jsx'
 import AreasComuns from '../pages/AreasComuns/index.jsx'
+import Logs from '../pages/Logs/index.jsx'
 import { MainLayout } from '../components/layout/MainLayout'
+import authService from '../services/authService'
 
 // Componente para rotas protegidas
 function ProtectedRoute({ children }) {
-  const token = localStorage.getItem('token')
+  const usuario = authService.getUsuarioLogado()
   
-  if (!token) {
+  if (!usuario) {
     return <Navigate to="/login" replace />
   }
   
@@ -74,6 +76,11 @@ export default function Rotas() {
       <Route path="/usuarios" element={
         <ProtectedRoute>
           <Usuarios />
+        </ProtectedRoute>
+      } />
+      <Route path="/logs" element={
+        <ProtectedRoute>
+          <Logs />
         </ProtectedRoute>
       } />
       

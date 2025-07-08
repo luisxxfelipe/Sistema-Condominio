@@ -58,7 +58,7 @@ const usuarioController = {
       }
       
       // Validar tipo de perfil
-      const tiposPermitidos = ['usuario', 'gerente', 'admin'];
+      const tiposPermitidos = ['convidado', 'leitura', 'escrita', 'gerente', 'admin', 'auditor'];
       if (!tiposPermitidos.includes(tipoPerfil)) {
         return res.status(400).json({ 
           message: "Tipo de perfil inválido. Valores aceitos: " + tiposPermitidos.join(', ')
@@ -121,7 +121,7 @@ const usuarioController = {
       }
       
       // Validar tipo de perfil
-      const tiposPermitidos = ['usuario', 'gerente', 'admin'];
+      const tiposPermitidos = ['convidado', 'leitura', 'escrita', 'gerente', 'admin', 'auditor'];
       if (!tiposPermitidos.includes(tipoPerfil)) {
         return res.status(400).json({ 
           message: "Tipo de perfil inválido. Valores aceitos: " + tiposPermitidos.join(', ')

@@ -41,6 +41,7 @@ export {
 
 export default {
     getAll: getLogs,
+    getAllLogs: getLogs,
     getById: getLogById,
     create: createLog,
     delete: deleteLog,
